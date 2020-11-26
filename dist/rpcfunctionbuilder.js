@@ -49,24 +49,24 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HttpFunctionBuilder = void 0;
+exports.RpcFunctionBuilder = void 0;
 var functionbuilder_1 = require("./functionbuilder");
-var httpcontext_1 = require("./httpcontext");
-var HttpFunctionBuilder = /** @class */ (function (_super) {
-    __extends(HttpFunctionBuilder, _super);
-    function HttpFunctionBuilder(context) {
+var rpccontext_1 = require("./rpccontext");
+var RpcFunctionBuilder = /** @class */ (function (_super) {
+    __extends(RpcFunctionBuilder, _super);
+    function RpcFunctionBuilder(context) {
         var _this = this;
-        var factory = function (ctx) { return new HttpFunctionBuilder(ctx); };
+        var factory = function (ctx) { return new RpcFunctionBuilder(ctx); };
         _this = _super.call(this, factory, functionbuilder_1.FunctionBuilderContext, context) || this;
         return _this;
     }
-    HttpFunctionBuilder.prototype.allow = function (options) {
+    RpcFunctionBuilder.prototype.allow = function (options) {
         return _super.prototype.allow.call(this, options);
     };
-    HttpFunctionBuilder.prototype.allowAuthenticated = function () {
+    RpcFunctionBuilder.prototype.allowAuthenticated = function () {
         return _super.prototype.allowAuthenticated.call(this);
     };
-    HttpFunctionBuilder.prototype.onRequest = function (func) {
+    RpcFunctionBuilder.prototype.onInvoke = function (func) {
         var _this = this;
         return function (funcContext) {
             var args = [];
@@ -74,23 +74,31 @@ var HttpFunctionBuilder = /** @class */ (function (_super) {
                 args[_i - 1] = arguments[_i];
             }
             return __awaiter(_this, void 0, void 0, function () {
-                var httpContext;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
+                var rpcContext, result;
+                var _a, _b, _c;
+                return __generator(this, function (_d) {
+                    switch (_d.label) {
                         case 0:
-                            httpContext = new httpcontext_1.HttpContext();
-                            httpContext.req = funcContext.req;
-                            httpContext.res = funcContext.res;
-                            httpContext.log = funcContext.log;
-                            return [4 /*yield*/, Promise.resolve(func(httpContext))];
+                            rpcContext = new rpccontext_1.RpcContext();
+                            rpcContext.user = this.decodeAuthInfo(funcContext.req);
+                            if (!this.isAuthorized(rpcContext.user)) {
+                                funcContext.res = { status: rpcContext.user ? 403 : 401 };
+                                return [2 /*return*/];
+                            }
+                            rpcContext.input = (_b = (_a = funcContext.req) === null || _a === void 0 ? void 0 : _a.body) === null || _b === void 0 ? void 0 : _b.data;
+                            rpcContext.log = funcContext.log;
+                            return [4 /*yield*/, Promise.resolve(func(rpcContext))];
                         case 1:
-                            _a.sent();
+                            result = _d.sent();
+                            (_c = funcContext.res) === null || _c === void 0 ? void 0 : _c.json({
+                                data: result
+                            });
                             return [2 /*return*/];
                     }
                 });
             });
         };
     };
-    return HttpFunctionBuilder;
+    return RpcFunctionBuilder;
 }(functionbuilder_1.FunctionBuilder));
-exports.HttpFunctionBuilder = HttpFunctionBuilder;
+exports.RpcFunctionBuilder = RpcFunctionBuilder;

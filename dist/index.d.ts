@@ -1,4 +1,6 @@
-import { HttpFunctionBuilder } from "./httpfunctionbuilder2";
+import { HttpFunctionBuilder } from "./httpfunctionbuilder";
+import { RpcFunctionBuilder } from "./rpcfunctionbuilder";
 declare const http: HttpFunctionBuilder;
-export { http };
+declare const rpc: RpcFunctionBuilder;
+export { http, rpc };
 //# sourceMappingURL=index.d.ts.map
