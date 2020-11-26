@@ -1,0 +1,24 @@
+{
+  "name": "swa-api",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "npm run lint && tsc",
+    "lint": "eslint . --ext .ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Anthony Chu <antchu@microsoft.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.8.2",
+    "@typescript-eslint/parser": "^4.8.2",
+    "eslint": "^7.14.0",
+    "typescript": "^4.1.2"
+  },
+  "dependencies": {
+    "@azure/functions": "^1.2.2",
+    "@types/mongodb": "^3.5.34"
+  }
+}
