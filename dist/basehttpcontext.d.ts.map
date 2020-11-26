@@ -1,0 +1,1 @@
+{"version":3,"file":"basehttpcontext.d.ts","sourceRoot":"","sources":["../basehttpcontext.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,QAAQ,EAAE,MAAM,YAAY,CAAC;AACtC,OAAO,EAAE,MAAM,EAAE,MAAM,uBAAuB,CAAC;AAC/C,OAAO,EAAE,EAAE,EAAE,MAAM,SAAS,CAAC;AAE7B,qBAAa,eAAe;IACxB,GAAG,CAAC,EAAE,MAAM,CAAC;IACb,EAAE,CAAC,EAAE,EAAE,CAAC;IACR,QAAQ,WAAkB;CAC7B"}
