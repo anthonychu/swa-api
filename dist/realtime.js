@@ -37,6 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Realtime = void 0;
+var signalr_1 = require("./signalr");
 var Realtime = /** @class */ (function () {
     function Realtime() {
     }
@@ -52,6 +53,12 @@ var Realtime = /** @class */ (function () {
                 return [2 /*return*/];
             });
         });
+    };
+    Realtime.generateNegotiateFunction = function () {
+        return function (context) {
+            var _a;
+            (_a = context === null || context === void 0 ? void 0 : context.res) === null || _a === void 0 ? void 0 : _a.json(signalr_1.SignalRClient.fromConnectionString().generateNegotiatePayload());
+        };
     };
     return Realtime;
 }());

@@ -1,3 +1,4 @@
+import { ServerlessFunction } from "./serverlessfunctions";
 export declare class Realtime {
     /**
      * Sends a realtime event to all connected clients.
@@ -6,5 +7,6 @@ export declare class Realtime {
      * @param data - event data
      */
     send(eventName: string, data?: unknown): Promise<void>;
+    static generateNegotiateFunction(): ServerlessFunction;
 }
 //# sourceMappingURL=realtime.d.ts.map

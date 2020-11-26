@@ -1,1 +1,1 @@
-{"version":3,"file":"realtime.d.ts","sourceRoot":"","sources":["../realtime.ts"],"names":[],"mappings":"AAAA,qBAAa,QAAQ;IACjB;;;;;OAKG;IACU,IAAI,CAAC,SAAS,EAAE,MAAM,EAAE,IAAI,CAAC,EAAE,OAAO,GAAG,OAAO,CAAC,IAAI,CAAC;CAGtE"}
+{"version":3,"file":"realtime.d.ts","sourceRoot":"","sources":["../realtime.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAA6B,MAAM,uBAAuB,CAAC;AAGtF,qBAAa,QAAQ;IACjB;;;;;OAKG;IACU,IAAI,CAAC,SAAS,EAAE,MAAM,EAAE,IAAI,CAAC,EAAE,OAAO,GAAG,OAAO,CAAC,IAAI,CAAC;WAIrD,yBAAyB,IAAI,kBAAkB;CAKhE"}

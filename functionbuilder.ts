@@ -10,7 +10,7 @@ export class FunctionBuilder<T extends FunctionBuilderContext> {
         }
     }
 
-    allow<U>(options: AuthorizationOptions): FunctionBuilder<T> {
+    allow(options: AuthorizationOptions): FunctionBuilder<T> {
         if (this.context.authorizationOptions) {
             throw "Cannot call allow() or allowAuthenticated() more than once.";
         }
