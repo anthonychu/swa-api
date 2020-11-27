@@ -2,6 +2,11 @@ import { ServerlessFunction, ServerlessFunctionContext } from "./serverlessfunct
 import { SignalRClient } from "./signalr";
 
 export class Realtime {
+    private signalRClient: SignalRClient;
+    constructor (signalRClient?: SignalRClient) {
+        this.signalRClient = signalRClient ?? SignalRClient.fromConnectionString();
+    }
+
     /**
      * Sends a realtime event to all connected clients.
      * 
@@ -9,12 +14,38 @@ export class Realtime {
      * @param data - event data
      */
     public async send(eventName: string, data?: unknown): Promise<void> {
-        return;
+        await this.signalRClient.send(eventName, data);
+    }
+
+    public async user(userId: string): Promise<UserRealtime> {
+        return new UserRealtime(this.signalRClient, userId);
+    }
+
+    public async group(groupName: string): Promise<GroupRealtime> {
+        return new GroupRealtime(this.signalRClient, groupName);
     }
 
     public static generateNegotiateFunction(): ServerlessFunction {
         return (context?: ServerlessFunctionContext) => {
             context?.res?.json(SignalRClient.fromConnectionString().generateNegotiatePayload());
         };
+    }
+}
+
+class UserRealtime {
+    constructor(private signalRClient: SignalRClient, private userId: string) {
+    }
+
+    public async send(eventName: string, data?: unknown): Promise<void> {
+        await this.signalRClient.send(eventName, data, { userId: this.userId });
+    }
+}
+
+class GroupRealtime {
+    constructor(private signalRClient: SignalRClient, private groupName: string) {
+    }
+
+    public async send(eventName: string, data?: unknown): Promise<void> {
+        await this.signalRClient.send(eventName, data, { groupName: this.groupName });
     }
 }

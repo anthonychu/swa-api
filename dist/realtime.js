@@ -39,7 +39,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Realtime = void 0;
 var signalr_1 = require("./signalr");
 var Realtime = /** @class */ (function () {
-    function Realtime() {
+    function Realtime(signalRClient) {
+        this.signalRClient = signalRClient !== null && signalRClient !== void 0 ? signalRClient : signalr_1.SignalRClient.fromConnectionString();
     }
     /**
      * Sends a realtime event to all connected clients.
@@ -50,7 +51,26 @@ var Realtime = /** @class */ (function () {
     Realtime.prototype.send = function (eventName, data) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.signalRClient.send(eventName, data)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Realtime.prototype.user = function (userId) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new UserRealtime(this.signalRClient, userId)];
+            });
+        });
+    };
+    Realtime.prototype.group = function (groupName) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, new GroupRealtime(this.signalRClient, groupName)];
             });
         });
     };
@@ -63,3 +83,41 @@ var Realtime = /** @class */ (function () {
     return Realtime;
 }());
 exports.Realtime = Realtime;
+var UserRealtime = /** @class */ (function () {
+    function UserRealtime(signalRClient, userId) {
+        this.signalRClient = signalRClient;
+        this.userId = userId;
+    }
+    UserRealtime.prototype.send = function (eventName, data) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.signalRClient.send(eventName, data, { userId: this.userId })];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    return UserRealtime;
+}());
+var GroupRealtime = /** @class */ (function () {
+    function GroupRealtime(signalRClient, groupName) {
+        this.signalRClient = signalRClient;
+        this.groupName = groupName;
+    }
+    GroupRealtime.prototype.send = function (eventName, data) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.signalRClient.send(eventName, data, { groupName: this.groupName })];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    return GroupRealtime;
+}());

@@ -1,1 +1,1 @@
-{"version":3,"file":"rpccontext.d.ts","sourceRoot":"","sources":["../rpccontext.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,eAAe,EAAE,MAAM,mBAAmB,CAAC;AAEpD,qBAAa,UAAW,SAAQ,eAAe;IAC3C,KAAK,CAAC,EAAE,OAAO,CAAC;CACnB"}
+{"version":3,"file":"rpccontext.d.ts","sourceRoot":"","sources":["../rpccontext.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAE,MAAM,kBAAkB,CAAC;AAC3C,OAAO,EAAE,eAAe,EAAE,MAAM,mBAAmB,CAAC;AAEpD,qBAAa,UAAW,SAAQ,eAAe;IACN,KAAK,CAAC;gBAA/B,OAAO,EAAE,OAAO,EAAS,KAAK,CAAC,SAAS;CAGvD"}

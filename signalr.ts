@@ -1,5 +1,4 @@
 import * as jwt from "jsonwebtoken";
-import { ServerlessFunction, ServerlessFunctionContext } from "./serverlessfunctions";
 
 export class SignalRClient {
     private static defaultHubName = "default";
@@ -25,10 +24,44 @@ export class SignalRClient {
         return new SignalRClient(endpoint, accessKey, this.defaultHubName);
     }
 
+    public async send(eventName: string, eventData?: unknown, options?: SendOptions): Promise<void> {
+        const hubUrl = `${this.endpoint}/api/v1/hubs/${this.hubName}`;
+        const accessToken = this.generateAccessToken(hubUrl);
+
+        const payload: SendPayload = {
+            target: eventName,
+            arguments: [ eventData ]
+        };
+
+        if (options?.userId) {
+            payload.userId = options.userId;
+        } else if (options?.groupName) {
+            payload.groupName = options.groupName;
+        }
+
+        await fetch(hubUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify(payload)
+        });
+    }
+
     generateNegotiatePayload(userId?: string): NegotiatePayload {
         const hubUrl = `${this.endpoint}/client/?hub=${this.hubName}`;
+        const accessToken = this.generateAccessToken(hubUrl, userId);
+
+        return {
+            accessToken,
+            url: hubUrl
+        };
+    }
+
+    private generateAccessToken(url: string, userId?: string) {
         const payload: JwtPayload = {
-            aud: hubUrl,
+            aud: url,
             iat: Math.floor(Date.now() / 1000) - 30,
             exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24)
         };
@@ -36,11 +69,7 @@ export class SignalRClient {
             payload.nameid = userId;
         }
         const accessToken = jwt.sign(payload, this.accessKey);
-
-        return {
-            accessToken,
-            url: hubUrl
-        };
+        return accessToken;
     }
 }
 
@@ -54,4 +83,16 @@ interface JwtPayload {
 interface NegotiatePayload {
     accessToken: string;
     url: string;
+}
+
+interface SendPayload {
+    target: string;
+    arguments: unknown[];
+    userId?: string;
+    groupName?: string;
+}
+
+interface SendOptions {
+    userId?: string;
+    groupName?: string;
 }

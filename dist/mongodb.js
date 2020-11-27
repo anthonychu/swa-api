@@ -1,17 +1,4 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -48,43 +35,45 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HttpFunctionBuilder = void 0;
-var functionbuilder_1 = require("./functionbuilder");
-var httpcontext_1 = require("./httpcontext");
-var HttpFunctionBuilder = /** @class */ (function (_super) {
-    __extends(HttpFunctionBuilder, _super);
-    function HttpFunctionBuilder(context) {
-        var _this = this;
-        var factory = function (ctx) { return new HttpFunctionBuilder(ctx); };
-        _this = _super.call(this, factory, functionbuilder_1.FunctionBuilderContext, context) || this;
-        return _this;
+exports.MongoDb = void 0;
+var mongodb_1 = require("mongodb");
+var constants_1 = __importDefault(require("./constants"));
+var MongoDb = /** @class */ (function () {
+    function MongoDb() {
     }
-    HttpFunctionBuilder.prototype.allow = function (options) {
-        return _super.prototype.allow.call(this, options);
-    };
-    HttpFunctionBuilder.prototype.allowAuthenticated = function () {
-        return _super.prototype.allowAuthenticated.call(this);
-    };
-    HttpFunctionBuilder.prototype.onRequest = function (func) {
-        var _this = this;
-        return function (funcContext) { return __awaiter(_this, void 0, void 0, function () {
-            var httpContext;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+    MongoDb.initializeClient = function () {
+        var _a;
+        return __awaiter(this, void 0, void 0, function () {
+            var connectionString, client, databaseName, database;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        httpContext = new httpcontext_1.HttpContext(funcContext);
-                        return [4 /*yield*/, httpContext.initializeServices()];
+                        console.log("Initializing database...");
+                        connectionString = process.env[constants_1.default.mongoConnectionStringSettingName];
+                        if (!connectionString) {
+                            throw "MongoDB connection string is missing.";
+                        }
+                        client = new mongodb_1.MongoClient(connectionString, { useUnifiedTopology: true });
+                        return [4 /*yield*/, client.connect()];
                     case 1:
-                        _a.sent();
-                        return [4 /*yield*/, Promise.resolve(func(httpContext))];
-                    case 2:
-                        _a.sent();
-                        return [2 /*return*/];
+                        _b.sent();
+                        databaseName = (_a = process.env[constants_1.default.mongoDatabaseNameSettingName]) !== null && _a !== void 0 ? _a : constants_1.default.mongoDefaultDatabaseName;
+                        database = client.db(databaseName);
+                        return [2 /*return*/, database];
                 }
             });
-        }); };
+        });
     };
-    return HttpFunctionBuilder;
-}(functionbuilder_1.FunctionBuilder));
-exports.HttpFunctionBuilder = HttpFunctionBuilder;
+    MongoDb.getClient = function () {
+        if (!this.initializeTask) {
+            this.initializeTask = this.initializeClient();
+        }
+        return this.initializeTask;
+    };
+    return MongoDb;
+}());
+exports.MongoDb = MongoDb;

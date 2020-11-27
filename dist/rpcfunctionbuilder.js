@@ -68,36 +68,32 @@ var RpcFunctionBuilder = /** @class */ (function (_super) {
     };
     RpcFunctionBuilder.prototype.onInvoke = function (func) {
         var _this = this;
-        return function (funcContext) {
-            var args = [];
-            for (var _i = 1; _i < arguments.length; _i++) {
-                args[_i - 1] = arguments[_i];
-            }
-            return __awaiter(_this, void 0, void 0, function () {
-                var rpcContext, result;
-                var _a, _b, _c;
-                return __generator(this, function (_d) {
-                    switch (_d.label) {
-                        case 0:
-                            rpcContext = new rpccontext_1.RpcContext();
-                            rpcContext.user = this.decodeAuthInfo(funcContext.req);
-                            if (!this.isAuthorized(rpcContext.user)) {
-                                funcContext.res = { status: rpcContext.user ? 403 : 401 };
-                                return [2 /*return*/];
-                            }
-                            rpcContext.input = (_b = (_a = funcContext.req) === null || _a === void 0 ? void 0 : _a.body) === null || _b === void 0 ? void 0 : _b.data;
-                            rpcContext.log = funcContext.log;
-                            return [4 /*yield*/, Promise.resolve(func(rpcContext))];
-                        case 1:
-                            result = _d.sent();
-                            (_c = funcContext.res) === null || _c === void 0 ? void 0 : _c.json({
-                                data: result
-                            });
+        return function (funcContext) { return __awaiter(_this, void 0, void 0, function () {
+            var rpcContext, result;
+            var _a, _b, _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        rpcContext = new rpccontext_1.RpcContext(funcContext);
+                        return [4 /*yield*/, rpcContext.initializeServices()];
+                    case 1:
+                        _d.sent();
+                        rpcContext.user = this.decodeAuthInfo(funcContext.req);
+                        if (!this.isAuthorized(rpcContext.user)) {
+                            funcContext.res = { status: rpcContext.user ? 403 : 401 };
                             return [2 /*return*/];
-                    }
-                });
+                        }
+                        rpcContext.input = (_b = (_a = funcContext.req) === null || _a === void 0 ? void 0 : _a.body) === null || _b === void 0 ? void 0 : _b.data;
+                        return [4 /*yield*/, Promise.resolve(func(rpcContext))];
+                    case 2:
+                        result = _d.sent();
+                        (_c = funcContext.res) === null || _c === void 0 ? void 0 : _c.json({
+                            data: result
+                        });
+                        return [2 /*return*/];
+                }
             });
-        };
+        }); };
     };
     return RpcFunctionBuilder;
 }(functionbuilder_1.FunctionBuilder));

@@ -1,6 +1,6 @@
 import { AuthorizationOptions, FunctionBuilder, FunctionBuilderContext } from "./functionbuilder";
 import { HttpContext } from "./httpcontext";
-import { HttpResponse, ServerlessFunction } from "./serverlessfunctions";
+import { ServerlessFunction } from "./serverlessfunctions";
 
 export class HttpFunctionBuilder extends FunctionBuilder<FunctionBuilderContext> {
     constructor(context?: FunctionBuilderContext) {
@@ -17,12 +17,9 @@ export class HttpFunctionBuilder extends FunctionBuilder<FunctionBuilderContext>
     }
 
     onRequest(func: (context: HttpContext) => void | Promise<void>): ServerlessFunction {
-        return async (funcContext, ...args) => {
-            const httpContext = new HttpContext();
-            httpContext.req = funcContext.req;
-            httpContext.res = funcContext.res as HttpResponse;
-            httpContext.log = funcContext.log;
-            
+        return async (funcContext) => {
+            const httpContext = new HttpContext(funcContext);
+            await httpContext.initializeServices();
             await Promise.resolve(func(httpContext));
         };
     }

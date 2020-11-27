@@ -17,8 +17,10 @@ exports.RpcContext = void 0;
 var basehttpcontext_1 = require("./basehttpcontext");
 var RpcContext = /** @class */ (function (_super) {
     __extends(RpcContext, _super);
-    function RpcContext() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function RpcContext(context, input) {
+        var _this = _super.call(this, context) || this;
+        _this.input = input;
+        return _this;
     }
     return RpcContext;
 }(basehttpcontext_1.BaseHttpContext));

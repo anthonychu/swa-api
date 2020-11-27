@@ -17,8 +17,11 @@ exports.HttpContext = void 0;
 var basehttpcontext_1 = require("./basehttpcontext");
 var HttpContext = /** @class */ (function (_super) {
     __extends(HttpContext, _super);
-    function HttpContext() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function HttpContext(context) {
+        var _this = _super.call(this, context) || this;
+        _this.req = context.req;
+        _this.res = context.res;
+        return _this;
     }
     return HttpContext;
 }(basehttpcontext_1.BaseHttpContext));
