@@ -1,4 +1,5 @@
 import * as jwt from "jsonwebtoken";
+import fetch from "node-fetch";
 
 export class SignalRClient {
     private static defaultHubName = "default";

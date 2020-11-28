@@ -1,1 +1,1 @@
-{"version":3,"file":"mongodb.d.ts","sourceRoot":"","sources":["../mongodb.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,EAAE,EAAe,MAAM,SAAS,CAAC;AAG1C,qBAAa,OAAO;IAChB,OAAO,CAAC,MAAM,CAAC,cAAc,CAAc;mBACtB,gBAAgB;WAevB,SAAS,IAAI,OAAO,CAAC,EAAE,CAAC;CAQzC"}
+{"version":3,"file":"mongodb.d.ts","sourceRoot":"","sources":["../mongodb.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,EAAE,EAAe,MAAM,SAAS,CAAC;AAG1C,qBAAa,OAAO;IAChB,OAAO,CAAC,MAAM,CAAC,cAAc,CAAc;IAC3C,OAAO,CAAC,MAAM,CAAC,YAAY,CAAS;mBACf,gBAAgB;WAkBjB,SAAS,IAAI,OAAO,CAAC,EAAE,GAAG,SAAS,CAAC;CAe3D"}

@@ -48,10 +48,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HttpFunctionBuilder = void 0;
 var functionbuilder_1 = require("./functionbuilder");
 var httpcontext_1 = require("./httpcontext");
+var busboy_1 = __importDefault(require("busboy"));
 var HttpFunctionBuilder = /** @class */ (function (_super) {
     __extends(HttpFunctionBuilder, _super);
     function HttpFunctionBuilder(context) {
@@ -69,21 +73,62 @@ var HttpFunctionBuilder = /** @class */ (function (_super) {
     HttpFunctionBuilder.prototype.onRequest = function (func) {
         var _this = this;
         return function (funcContext) { return __awaiter(_this, void 0, void 0, function () {
-            var httpContext;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var httpContext, req, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         httpContext = new httpcontext_1.HttpContext(funcContext);
                         return [4 /*yield*/, httpContext.initializeServices()];
                     case 1:
-                        _a.sent();
-                        return [4 /*yield*/, Promise.resolve(func(httpContext))];
+                        _b.sent();
+                        httpContext.user = this.decodeAuthInfo(funcContext.req);
+                        if (!this.isAuthorized(httpContext.user)) {
+                            funcContext.res = { status: httpContext.user ? 403 : 401 };
+                            return [2 /*return*/];
+                        }
+                        req = funcContext.req;
+                        if (!(req && req.headers['content-type'] && req.headers['content-type'].startsWith('multipart/form-data'))) return [3 /*break*/, 3];
+                        _a = req;
+                        return [4 /*yield*/, this.parseMultipartData(req)];
                     case 2:
-                        _a.sent();
+                        _a.form = _b.sent();
+                        _b.label = 3;
+                    case 3: return [4 /*yield*/, Promise.resolve(func(httpContext))];
+                    case 4:
+                        _b.sent();
                         return [2 /*return*/];
                 }
             });
         }); };
+    };
+    HttpFunctionBuilder.prototype.parseMultipartData = function (req) {
+        return new Promise(function (resolve, reject) {
+            var busboy = new busboy_1.default({ headers: req.headers });
+            var form = {};
+            busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
+                var fieldData = [];
+                var formFile = {
+                    filename: filename,
+                    encoding: encoding,
+                    mimetype: mimetype
+                };
+                file.on('data', function (data) {
+                    fieldData.push.apply(fieldData, data);
+                });
+                file.on('end', function () {
+                    formFile.data = Buffer.from(fieldData);
+                    form[fieldname] = formFile;
+                });
+            });
+            busboy.on('field', function (fieldname, val) {
+                form[fieldname] = val;
+            });
+            busboy.on('finish', function () {
+                resolve(form);
+            });
+            busboy.on('error', reject);
+            busboy.write(req.body);
+        });
     };
     return HttpFunctionBuilder;
 }(functionbuilder_1.FunctionBuilder));

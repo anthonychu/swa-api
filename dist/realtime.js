@@ -74,12 +74,6 @@ var Realtime = /** @class */ (function () {
             });
         });
     };
-    Realtime.generateNegotiateFunction = function () {
-        return function (context) {
-            var _a;
-            (_a = context === null || context === void 0 ? void 0 : context.res) === null || _a === void 0 ? void 0 : _a.json(signalr_1.SignalRClient.fromConnectionString().generateNegotiatePayload());
-        };
-    };
     return Realtime;
 }());
 exports.Realtime = Realtime;

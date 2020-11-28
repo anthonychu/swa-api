@@ -14,8 +14,9 @@ var FunctionBuilder = /** @class */ (function () {
         if (this.context.authorizationOptions) {
             throw "Cannot call allow() or allowAuthenticated() more than once.";
         }
-        this.context.authorizationOptions = options;
-        return this.builderFactory(this.context);
+        var newContext = new this.contextType();
+        newContext.authorizationOptions = options;
+        return this.builderFactory(newContext);
     };
     FunctionBuilder.prototype.allowAuthenticated = function () {
         return this.allow({ userRoles: ["authenticated"] });

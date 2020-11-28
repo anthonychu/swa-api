@@ -14,8 +14,9 @@ export class FunctionBuilder<T extends FunctionBuilderContext> {
         if (this.context.authorizationOptions) {
             throw "Cannot call allow() or allowAuthenticated() more than once.";
         }
-        this.context.authorizationOptions = options;
-        return this.builderFactory(this.context);
+        const newContext = new this.contextType();
+        newContext.authorizationOptions = options;
+        return this.builderFactory(newContext);
     }
 
     allowAuthenticated(): FunctionBuilder<T> {

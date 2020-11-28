@@ -63,17 +63,39 @@ var MongoDb = /** @class */ (function () {
                         _b.sent();
                         databaseName = (_a = process.env[constants_1.default.mongoDatabaseNameSettingName]) !== null && _a !== void 0 ? _a : constants_1.default.mongoDefaultDatabaseName;
                         database = client.db(databaseName);
+                        console.log("Database initialized");
                         return [2 /*return*/, database];
                 }
             });
         });
     };
     MongoDb.getClient = function () {
-        if (!this.initializeTask) {
-            this.initializeTask = this.initializeClient();
-        }
-        return this.initializeTask;
+        return __awaiter(this, void 0, void 0, function () {
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        if (this.skipDatabase)
+                            return [2 /*return*/];
+                        _b.label = 1;
+                    case 1:
+                        _b.trys.push([1, 3, , 4]);
+                        if (!this.initializeTask) {
+                            this.initializeTask = this.initializeClient();
+                        }
+                        return [4 /*yield*/, this.initializeTask];
+                    case 2: return [2 /*return*/, _b.sent()];
+                    case 3:
+                        _a = _b.sent();
+                        this.skipDatabase = true;
+                        console.warn("Skipping database");
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
     };
+    MongoDb.skipDatabase = false;
     return MongoDb;
 }());
 exports.MongoDb = MongoDb;

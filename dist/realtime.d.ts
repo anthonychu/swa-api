@@ -1,4 +1,3 @@
-import { ServerlessFunction } from "./serverlessfunctions";
 import { SignalRClient } from "./signalr";
 export declare class Realtime {
     private signalRClient;
@@ -12,7 +11,6 @@ export declare class Realtime {
     send(eventName: string, data?: unknown): Promise<void>;
     user(userId: string): Promise<UserRealtime>;
     group(groupName: string): Promise<GroupRealtime>;
-    static generateNegotiateFunction(): ServerlessFunction;
 }
 declare class UserRealtime {
     private signalRClient;

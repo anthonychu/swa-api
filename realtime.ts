@@ -1,4 +1,3 @@
-import { ServerlessFunction, ServerlessFunctionContext } from "./serverlessfunctions";
 import { SignalRClient } from "./signalr";
 
 export class Realtime {
@@ -23,12 +22,6 @@ export class Realtime {
 
     public async group(groupName: string): Promise<GroupRealtime> {
         return new GroupRealtime(this.signalRClient, groupName);
-    }
-
-    public static generateNegotiateFunction(): ServerlessFunction {
-        return (context?: ServerlessFunctionContext) => {
-            context?.res?.json(SignalRClient.fromConnectionString().generateNegotiatePayload());
-        };
     }
 }
 

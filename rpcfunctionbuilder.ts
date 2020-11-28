@@ -20,9 +20,8 @@ export class RpcFunctionBuilder extends FunctionBuilder<FunctionBuilderContext> 
         return async (funcContext) => {
             const rpcContext = new RpcContext(funcContext);
             await rpcContext.initializeServices();
-
+            
             rpcContext.user = this.decodeAuthInfo(funcContext.req);
-
             if (!this.isAuthorized(rpcContext.user)) {
                 funcContext.res = { status: rpcContext.user ? 403 : 401 };
                 return;

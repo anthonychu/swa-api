@@ -19,8 +19,11 @@
   },
   "dependencies": {
     "@azure/functions": "^1.2.2",
+    "@types/busboy": "^0.2.3",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/mongodb": "^3.5.34",
+    "@types/node-fetch": "^2.5.7",
+    "busboy": "^0.3.1",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.3",
     "node-fetch": "^2.6.1"

@@ -6,5 +6,6 @@ export declare class HttpFunctionBuilder extends FunctionBuilder<FunctionBuilder
     allow(options: AuthorizationOptions): HttpFunctionBuilder;
     allowAuthenticated(): HttpFunctionBuilder;
     onRequest(func: (context: HttpContext) => void | Promise<void>): ServerlessFunction;
+    private parseMultipartData;
 }
 //# sourceMappingURL=httpfunctionbuilder.d.ts.map
