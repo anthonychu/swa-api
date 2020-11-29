@@ -70,24 +70,24 @@ var RpcFunctionBuilder = /** @class */ (function (_super) {
         var _this = this;
         return function (funcContext) { return __awaiter(_this, void 0, void 0, function () {
             var rpcContext, result;
-            var _a, _b, _c;
-            return __generator(this, function (_d) {
-                switch (_d.label) {
+            var _a, _b, _c, _d;
+            return __generator(this, function (_e) {
+                switch (_e.label) {
                     case 0:
                         rpcContext = new rpccontext_1.RpcContext(funcContext);
-                        return [4 /*yield*/, rpcContext.initializeServices()];
-                    case 1:
-                        _d.sent();
                         rpcContext.user = this.decodeAuthInfo(funcContext.req);
+                        return [4 /*yield*/, rpcContext.initializeServices((_a = rpcContext.user) !== null && _a !== void 0 ? _a : null)];
+                    case 1:
+                        _e.sent();
                         if (!this.isAuthorized(rpcContext.user)) {
                             funcContext.res = { status: rpcContext.user ? 403 : 401 };
                             return [2 /*return*/];
                         }
-                        rpcContext.input = (_b = (_a = funcContext.req) === null || _a === void 0 ? void 0 : _a.body) === null || _b === void 0 ? void 0 : _b.data;
+                        rpcContext.input = (_c = (_b = funcContext.req) === null || _b === void 0 ? void 0 : _b.body) === null || _c === void 0 ? void 0 : _c.data;
                         return [4 /*yield*/, Promise.resolve(func(rpcContext))];
                     case 2:
-                        result = _d.sent();
-                        (_c = funcContext.res) === null || _c === void 0 ? void 0 : _c.json({
+                        result = _e.sent();
+                        (_d = funcContext.res) === null || _d === void 0 ? void 0 : _d.json({
                             data: result
                         });
                         return [2 /*return*/];

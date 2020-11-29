@@ -1,8 +1,11 @@
-import { Db } from "mongodb";
+import { Database } from "./database";
+import { AuthenticatedUser } from "./functionbuilder";
 export declare class MongoDb {
     private static initializeTask;
     private static skipDatabase;
+    private static client;
+    private static getConnectionString;
     private static initializeClient;
-    static getClient(): Promise<Db | undefined>;
+    static getClient(user?: AuthenticatedUser): Promise<Database | undefined>;
 }
 //# sourceMappingURL=mongodb.d.ts.map

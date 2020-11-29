@@ -20,9 +20,9 @@ export class HttpFunctionBuilder extends FunctionBuilder<FunctionBuilderContext>
     onRequest(func: (context: HttpContext) => void | Promise<void>): ServerlessFunction {
         return async (funcContext) => {
             const httpContext = new HttpContext(funcContext);
-            await httpContext.initializeServices();
             
             httpContext.user = this.decodeAuthInfo(funcContext.req);
+            await httpContext.initializeServices(httpContext.user ?? null);
             if (!this.isAuthorized(httpContext.user)) {
                 funcContext.res = { status: httpContext.user ? 403 : 401 };
                 return;

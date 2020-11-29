@@ -19,9 +19,9 @@ export class RpcFunctionBuilder extends FunctionBuilder<FunctionBuilderContext> 
     onInvoke(func: (context: RpcContext) => void | Promise<void>): ServerlessFunction {
         return async (funcContext) => {
             const rpcContext = new RpcContext(funcContext);
-            await rpcContext.initializeServices();
             
             rpcContext.user = this.decodeAuthInfo(funcContext.req);
+            await rpcContext.initializeServices(rpcContext.user ?? null);
             if (!this.isAuthorized(rpcContext.user)) {
                 funcContext.res = { status: rpcContext.user ? 403 : 401 };
                 return;

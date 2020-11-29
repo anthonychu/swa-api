@@ -74,14 +74,15 @@ var HttpFunctionBuilder = /** @class */ (function (_super) {
         var _this = this;
         return function (funcContext) { return __awaiter(_this, void 0, void 0, function () {
             var httpContext, req, _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
                         httpContext = new httpcontext_1.HttpContext(funcContext);
-                        return [4 /*yield*/, httpContext.initializeServices()];
-                    case 1:
-                        _b.sent();
                         httpContext.user = this.decodeAuthInfo(funcContext.req);
+                        return [4 /*yield*/, httpContext.initializeServices((_b = httpContext.user) !== null && _b !== void 0 ? _b : null)];
+                    case 1:
+                        _c.sent();
                         if (!this.isAuthorized(httpContext.user)) {
                             funcContext.res = { status: httpContext.user ? 403 : 401 };
                             return [2 /*return*/];
@@ -91,11 +92,11 @@ var HttpFunctionBuilder = /** @class */ (function (_super) {
                         _a = req;
                         return [4 /*yield*/, this.parseMultipartData(req)];
                     case 2:
-                        _a.form = _b.sent();
-                        _b.label = 3;
+                        _a.form = _c.sent();
+                        _c.label = 3;
                     case 3: return [4 /*yield*/, Promise.resolve(func(httpContext))];
                     case 4:
-                        _b.sent();
+                        _c.sent();
                         return [2 /*return*/];
                 }
             });

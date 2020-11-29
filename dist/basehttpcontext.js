@@ -43,17 +43,18 @@ var BaseHttpContext = /** @class */ (function () {
     function BaseHttpContext(context) {
         this.log = context.log;
     }
-    BaseHttpContext.prototype.initializeServices = function () {
+    BaseHttpContext.prototype.initializeServices = function (user) {
         return __awaiter(this, void 0, void 0, function () {
             var _a;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
+                        this.user = user !== null && user !== void 0 ? user : undefined;
                         this.realtime = new realtime_1.Realtime();
                         _a = this;
-                        return [4 /*yield*/, mongodb_1.MongoDb.getClient()];
+                        return [4 /*yield*/, mongodb_1.MongoDb.getClient(this.user)];
                     case 1:
-                        _a.db = _b.sent();
+                        _a.database = _b.sent();
                         return [2 /*return*/];
                 }
             });

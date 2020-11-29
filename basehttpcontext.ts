@@ -1,13 +1,13 @@
 import { Realtime } from "./realtime";
 import { Logger } from "./serverlessfunctions";
-import { Db } from "mongodb";
 import { AuthenticatedUser } from "./functionbuilder";
 import { Context } from "@azure/functions";
 import { MongoDb } from "./mongodb";
+import { Database } from "./database";
 
 export class BaseHttpContext {
     log: Logger;
-    db?: Db;
+    database?: Database;
     realtime?: Realtime;
     user?: AuthenticatedUser;
 
@@ -15,8 +15,9 @@ export class BaseHttpContext {
         this.log = context.log;
     }
 
-    async initializeServices(): Promise<void> {
+    async initializeServices(user: AuthenticatedUser | null): Promise<void> {
+        this.user = user ?? undefined;
         this.realtime = new Realtime();
-        this.db = await MongoDb.getClient();
+        this.database = await MongoDb.getClient(this.user);
     }
 }
