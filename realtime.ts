@@ -16,11 +16,11 @@ export class Realtime {
         await this.signalRClient.send(eventName, data);
     }
 
-    public async user(userId: string): Promise<UserRealtime> {
+    public user(userId: string): UserRealtime {
         return new UserRealtime(this.signalRClient, userId);
     }
 
-    public async group(groupName: string): Promise<GroupRealtime> {
+    public group(groupName: string): GroupRealtime {
         return new GroupRealtime(this.signalRClient, groupName);
     }
 }

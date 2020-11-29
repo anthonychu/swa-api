@@ -9,8 +9,8 @@ export declare class Realtime {
      * @param data - event data
      */
     send(eventName: string, data?: unknown): Promise<void>;
-    user(userId: string): Promise<UserRealtime>;
-    group(groupName: string): Promise<GroupRealtime>;
+    user(userId: string): UserRealtime;
+    group(groupName: string): GroupRealtime;
 }
 declare class UserRealtime {
     private signalRClient;

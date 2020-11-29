@@ -26,20 +26,21 @@ export class SignalRClient {
     }
 
     public async send(eventName: string, eventData?: unknown, options?: SendOptions): Promise<void> {
-        const hubUrl = `${this.endpoint}/api/v1/hubs/${this.hubName}`;
+        let hubUrl = `${this.endpoint}/api/v1/hubs/${this.hubName}`;
+
+        if (options?.userId) {
+            hubUrl += `/users/${options.userId}`;
+        } else if (options?.groupName) {
+            hubUrl += `/groups/${options.groupName}`;
+        }
+
         const accessToken = this.generateAccessToken(hubUrl);
 
         const payload: SendPayload = {
             target: eventName,
             arguments: [eventData]
         };
-
-        if (options?.userId) {
-            payload.userId = options.userId;
-        } else if (options?.groupName) {
-            payload.groupName = options.groupName;
-        }
-
+console.log(hubUrl);
         await fetch(hubUrl, {
             method: 'POST',
             headers: {

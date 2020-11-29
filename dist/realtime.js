@@ -61,18 +61,10 @@ var Realtime = /** @class */ (function () {
         });
     };
     Realtime.prototype.user = function (userId) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, new UserRealtime(this.signalRClient, userId)];
-            });
-        });
+        return new UserRealtime(this.signalRClient, userId);
     };
     Realtime.prototype.group = function (groupName) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, new GroupRealtime(this.signalRClient, groupName)];
-            });
-        });
+        return new GroupRealtime(this.signalRClient, groupName);
     };
     return Realtime;
 }());

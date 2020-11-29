@@ -88,17 +88,18 @@ var SignalRClient = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         hubUrl = this.endpoint + "/api/v1/hubs/" + this.hubName;
+                        if (options === null || options === void 0 ? void 0 : options.userId) {
+                            hubUrl += "/users/" + options.userId;
+                        }
+                        else if (options === null || options === void 0 ? void 0 : options.groupName) {
+                            hubUrl += "/groups/" + options.groupName;
+                        }
                         accessToken = this.generateAccessToken(hubUrl);
                         payload = {
                             target: eventName,
                             arguments: [eventData]
                         };
-                        if (options === null || options === void 0 ? void 0 : options.userId) {
-                            payload.userId = options.userId;
-                        }
-                        else if (options === null || options === void 0 ? void 0 : options.groupName) {
-                            payload.groupName = options.groupName;
-                        }
+                        console.log(hubUrl);
                         return [4 /*yield*/, node_fetch_1.default(hubUrl, {
                                 method: 'POST',
                                 headers: {
