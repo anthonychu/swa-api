@@ -68,22 +68,37 @@ class SimpleMongoCollection implements Collection {
         return result.insertedId.toString();
     }
 
-    async replaceDocument(doc: { [field: string]: unknown; }): Promise<void> {
+    async replaceDocument(doc: { [field: string]: unknown; }, additionalQuery?: { [field: string]: unknown; }): Promise<void> {
         if (!doc._id) {
             throw new Error("Replacement document must contain _id.");
         }
         const _id = new ObjectId(doc._id as string);
         this.addAuditInfo(doc);
         delete doc._id;
-        await this.mongoCollection.replaceOne({ _id }, doc);
+        const query = { _id };
+        if (additionalQuery) {
+            Object.assign(query, additionalQuery);
+        }
+        const result = await this.mongoCollection.replaceOne(query, doc);
+        if (result.modifiedCount !== 1) {
+            throw("Expected 1 modified but got " + result.modifiedCount);
+        }
     }
 
-    async deleteDocument(_id: string): Promise<void> {
-        await this.mongoCollection.deleteOne({ _id: new ObjectId(_id) });
+    async deleteDocument(_id: string, additionalQuery?: { [field: string]: unknown; }): Promise<void> {
+        const query = { _id: new ObjectId(_id) };
+        if (additionalQuery) {
+            Object.assign(query, additionalQuery);
+        }
+        await this.mongoCollection.deleteOne(query);
     }
 
-    async getDocument(_id: string): Promise<{ [field: string]: unknown; } | null> {
-        return await this.mongoCollection.findOne({ _id: new ObjectId(_id) });
+    async getDocument(_id: string, additionalQuery?: { [field: string]: unknown; }): Promise<{ [field: string]: unknown; } | null> {
+        const query = { _id: new ObjectId(_id) };
+        if (additionalQuery) {
+            Object.assign(query, additionalQuery);
+        }
+        return await this.mongoCollection.findOne(query);
     }
 
     async findDocuments(query?: { [field: string]: unknown; }, options?: FindDocumentsOptions): Promise<{ [field: string]: unknown; }[]> {

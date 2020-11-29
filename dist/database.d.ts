@@ -9,9 +9,15 @@ export interface Collection {
     }): Promise<string>;
     replaceDocument(doc: {
         [field: string]: unknown;
+    }, additionalQuery?: {
+        [field: string]: unknown;
     }): Promise<void>;
-    deleteDocument(_id: string): Promise<void>;
-    getDocument(_id: string): Promise<{
+    deleteDocument(_id: string, additionalQuery?: {
+        [field: string]: unknown;
+    }): Promise<void>;
+    getDocument(_id: string, additionalQuery?: {
+        [field: string]: unknown;
+    }): Promise<{
         [field: string]: unknown;
     } | null>;
     findDocuments(query?: {
@@ -21,13 +27,32 @@ export interface Collection {
     }[]>;
 }
 export interface FindDocumentsOptions {
-    sort: {
+    sort?: {
         [field: string]: number;
     };
-    projection: {
+    projection?: {
         [field: string]: number;
     };
-    limit: number;
-    skip: number;
+    limit?: number;
+    skip?: number;
 }
+export declare class DatabaseConfigHelper {
+    config(databaseConfig: DatabaseConfig): DatabaseConfig;
+}
+export interface DatabaseConfig {
+    collections?: {
+        [collectionName: string]: DatabaseConfigCollection;
+    };
+}
+interface DatabaseConfigCollection {
+    permissions?: DatabaseConfigCollectionPermission[];
+    notifyOnChange?: boolean;
+}
+export interface DatabaseConfigCollectionPermission {
+    operations?: DatabaseOperationType[];
+    allowedRoles?: ("authenticated" | string)[];
+    restrictDocsByUser?: boolean;
+}
+export declare type DatabaseOperationType = "insertDocument" | "replaceDocument" | "deleteDocument" | "getDocument" | "findDocuments";
+export {};
 //# sourceMappingURL=database.d.ts.map

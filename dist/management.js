@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -44,6 +63,19 @@ var auth_1 = require("./auth");
 var constants_1 = __importDefault(require("./constants"));
 var mongodb_1 = require("./mongodb");
 var signalr_1 = require("./signalr");
+var fs_1 = __importDefault(require("fs"));
+var path_1 = __importDefault(require("path"));
+var databaseImportTask;
+var databaseConfig = "database/config.js";
+if (fs_1.default.existsSync(databaseConfig)) {
+    var databaseConfigPath = path_1.default.resolve(databaseConfig);
+    console.log("Importing " + databaseConfigPath + "...");
+    databaseImportTask = Promise.resolve().then(function () { return __importStar(require(databaseConfigPath)); });
+}
+else {
+    console.log("No configuration found at " + databaseConfig);
+    databaseImportTask = Promise.resolve({});
+}
 function swaManagementFunction(context) {
     return __awaiter(this, void 0, void 0, function () {
         var route, user, _a;
@@ -74,11 +106,110 @@ function swaManagementFunction(context) {
 }
 exports.swaManagementFunction = swaManagementFunction;
 function processDatabaseOperation(context, user) {
-    var _a, _b;
+    var _a, _b, _c, _d, _e;
     return __awaiter(this, void 0, void 0, function () {
-        var payload, database, collection, _c;
-        return __generator(this, function (_d) {
-            switch (_d.label) {
+        function getDocumentOperation(collection, payload, context, permission, user) {
+            return __awaiter(this, void 0, void 0, function () {
+                var additionalQuery, result;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            additionalQuery = permission.restrictDocsByUser ? { _userId: user.userId } : {};
+                            return [4 /*yield*/, collection.getDocument(payload._id, additionalQuery)];
+                        case 1:
+                            result = _a.sent();
+                            setResponse(context, 200, { result: result });
+                            return [2 /*return*/];
+                    }
+                });
+            });
+        }
+        function findDocumentsOperation(collection, payload, context, permission, user) {
+            var _a, _b, _c, _d, _e;
+            return __awaiter(this, void 0, void 0, function () {
+                var options, query, result;
+                return __generator(this, function (_f) {
+                    switch (_f.label) {
+                        case 0:
+                            options = {
+                                sort: (_a = payload.options) === null || _a === void 0 ? void 0 : _a.sort,
+                                skip: (_b = payload.options) === null || _b === void 0 ? void 0 : _b.skip,
+                                limit: (_c = payload.options) === null || _c === void 0 ? void 0 : _c.limit,
+                                projection: (_d = payload.options) === null || _d === void 0 ? void 0 : _d.projection
+                            };
+                            query = (_e = payload.query) !== null && _e !== void 0 ? _e : {};
+                            if (permission.restrictDocsByUser) {
+                                query._userId = user.userId;
+                            }
+                            return [4 /*yield*/, collection.findDocuments(query, options)];
+                        case 1:
+                            result = _f.sent();
+                            setResponse(context, 200, { result: result });
+                            return [2 /*return*/];
+                    }
+                });
+            });
+        }
+        function insertDocumentOperation(collection, payload, context) {
+            return __awaiter(this, void 0, void 0, function () {
+                var result;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, collection.insertDocument(payload.doc)];
+                        case 1:
+                            result = _a.sent();
+                            setResponse(context, 200, { result: result });
+                            return [2 /*return*/];
+                    }
+                });
+            });
+        }
+        function replaceDocumentOperation(collection, payload, context, permission, user) {
+            return __awaiter(this, void 0, void 0, function () {
+                var additionalQuery;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            additionalQuery = permission.restrictDocsByUser ? { _userId: user.userId } : {};
+                            return [4 /*yield*/, collection.replaceDocument(payload.doc, additionalQuery)];
+                        case 1:
+                            _a.sent();
+                            setResponse(context, 200);
+                            return [2 /*return*/];
+                    }
+                });
+            });
+        }
+        function deleteDocumentOperation(collection, payload, context, permission, user) {
+            return __awaiter(this, void 0, void 0, function () {
+                var additionalQuery;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            additionalQuery = permission.restrictDocsByUser ? { _userId: user.userId } : {};
+                            return [4 /*yield*/, collection.deleteDocument(payload._id, additionalQuery)];
+                        case 1:
+                            _a.sent();
+                            setResponse(context, 200);
+                            return [2 /*return*/];
+                    }
+                });
+            });
+        }
+        function setResponse(context, status, body) {
+            if (context.res) {
+                context.res.status = status;
+                context.res.headers = {
+                    "Content-Type": "application/json"
+                };
+                if (body) {
+                    context.res.body = body;
+                }
+            }
+        }
+        var payload, config, collectionConfig, operationPermission, matchingAllowedUserRoles, database, collection, _f;
+        return __generator(this, function (_g) {
+            switch (_g.label) {
                 case 0:
                     if (((_a = context.req) === null || _a === void 0 ? void 0 : _a.method) !== "POST") {
                         if (context.res) {
@@ -93,126 +224,65 @@ function processDatabaseOperation(context, user) {
                         return [2 /*return*/];
                     }
                     payload = (_b = context.req) === null || _b === void 0 ? void 0 : _b.body;
-                    return [4 /*yield*/, mongodb_1.MongoDb.getClient(user)];
+                    return [4 /*yield*/, databaseImportTask];
                 case 1:
-                    database = _d.sent();
+                    config = _g.sent();
+                    if (!payload.collection || !((_d = (_c = config.collections) === null || _c === void 0 ? void 0 : _c[payload.collection]) === null || _d === void 0 ? void 0 : _d.permissions)) {
+                        throw new Error("No configuration defined for " + payload.collection);
+                    }
+                    collectionConfig = config.collections[payload.collection];
+                    operationPermission = (_e = collectionConfig.permissions) === null || _e === void 0 ? void 0 : _e.find(function (p) { var _a; return (_a = p.operations) === null || _a === void 0 ? void 0 : _a.find(function (o) { return o === payload.operation; }); });
+                    if (!operationPermission) {
+                        throw new Error("No permissions defined for " + payload.collection + " " + payload.operation);
+                    }
+                    matchingAllowedUserRoles = user.userRoles.filter(function (value) { var _a; return (_a = operationPermission === null || operationPermission === void 0 ? void 0 : operationPermission.allowedRoles) === null || _a === void 0 ? void 0 : _a.includes(value); });
+                    if (matchingAllowedUserRoles.length === 0) {
+                        if (context.res) {
+                            context.res.status = 403;
+                        }
+                        return [2 /*return*/];
+                    }
+                    return [4 /*yield*/, mongodb_1.MongoDb.getClient(user)];
+                case 2:
+                    database = _g.sent();
                     collection = database === null || database === void 0 ? void 0 : database.collection(payload.collection);
                     if (!database || !collection || !payload.collection) {
                         setResponse(context, 400);
                         return [2 /*return*/];
                     }
-                    _c = payload.operation;
-                    switch (_c) {
-                        case "getDocument": return [3 /*break*/, 2];
-                        case "findDocuments": return [3 /*break*/, 4];
-                        case "insertDocument": return [3 /*break*/, 6];
-                        case "replaceDocument": return [3 /*break*/, 8];
-                        case "deleteDocument": return [3 /*break*/, 10];
+                    _f = payload.operation;
+                    switch (_f) {
+                        case "getDocument": return [3 /*break*/, 3];
+                        case "findDocuments": return [3 /*break*/, 5];
+                        case "insertDocument": return [3 /*break*/, 7];
+                        case "replaceDocument": return [3 /*break*/, 9];
+                        case "deleteDocument": return [3 /*break*/, 11];
                     }
-                    return [3 /*break*/, 12];
-                case 2: return [4 /*yield*/, getDocumentOperation(collection, payload, context)];
-                case 3:
-                    _d.sent();
+                    return [3 /*break*/, 13];
+                case 3: return [4 /*yield*/, getDocumentOperation(collection, payload, context, operationPermission, user)];
+                case 4:
+                    _g.sent();
                     return [2 /*return*/];
-                case 4: return [4 /*yield*/, findDocumentsOperation(collection, payload, context)];
-                case 5:
-                    _d.sent();
+                case 5: return [4 /*yield*/, findDocumentsOperation(collection, payload, context, operationPermission, user)];
+                case 6:
+                    _g.sent();
                     return [2 /*return*/];
-                case 6: return [4 /*yield*/, insertDocumentOperation(collection, payload, context)];
-                case 7:
-                    _d.sent();
+                case 7: return [4 /*yield*/, insertDocumentOperation(collection, payload, context)];
+                case 8:
+                    _g.sent();
                     return [2 /*return*/];
-                case 8: return [4 /*yield*/, replaceDocumentOperation(collection, payload, context)];
-                case 9:
-                    _d.sent();
+                case 9: return [4 /*yield*/, replaceDocumentOperation(collection, payload, context, operationPermission, user)];
+                case 10:
+                    _g.sent();
                     return [2 /*return*/];
-                case 10: return [4 /*yield*/, deleteDocumentOperation(collection, payload, context)];
-                case 11:
-                    _d.sent();
+                case 11: return [4 /*yield*/, deleteDocumentOperation(collection, payload, context, operationPermission, user)];
+                case 12:
+                    _g.sent();
                     return [2 /*return*/];
-                case 12: return [2 /*return*/];
+                case 13: return [2 /*return*/];
             }
         });
     });
-}
-function getDocumentOperation(collection, payload, context) {
-    return __awaiter(this, void 0, void 0, function () {
-        var result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, collection.getDocument(payload._id)];
-                case 1:
-                    result = _a.sent();
-                    setResponse(context, 200, { result: result });
-                    return [2 /*return*/];
-            }
-        });
-    });
-}
-function findDocumentsOperation(collection, payload, context) {
-    return __awaiter(this, void 0, void 0, function () {
-        var result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, collection.findDocuments(payload.query, payload.options)];
-                case 1:
-                    result = _a.sent();
-                    setResponse(context, 200, { result: result });
-                    return [2 /*return*/];
-            }
-        });
-    });
-}
-function insertDocumentOperation(collection, payload, context) {
-    return __awaiter(this, void 0, void 0, function () {
-        var result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, collection.insertDocument(payload.doc)];
-                case 1:
-                    result = _a.sent();
-                    setResponse(context, 200, { result: result });
-                    return [2 /*return*/];
-            }
-        });
-    });
-}
-function replaceDocumentOperation(collection, payload, context) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, collection.replaceDocument(payload.doc)];
-                case 1:
-                    _a.sent();
-                    setResponse(context, 200);
-                    return [2 /*return*/];
-            }
-        });
-    });
-}
-function deleteDocumentOperation(collection, payload, context) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, collection.deleteDocument(payload._id)];
-                case 1:
-                    _a.sent();
-                    setResponse(context, 200);
-                    return [2 /*return*/];
-            }
-        });
-    });
-}
-function setResponse(context, status, body) {
-    if (context.res) {
-        context.res.status = status;
-        context.res.headers = {
-            "Content-Type": "application/json"
-        };
-        if (body) {
-            context.res.body = body;
-        }
-    }
 }
 function signalRNegotiate(context, user) {
     var _a;

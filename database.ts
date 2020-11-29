@@ -7,15 +7,38 @@ export interface Database {
 
 export interface Collection {
     insertDocument(doc: {[field:string]: unknown}): Promise<string>;
-    replaceDocument(doc: {[field:string]: unknown}): Promise<void>;
-    deleteDocument(_id: string): Promise<void>;
-    getDocument(_id: string): Promise<{[field:string]: unknown} | null>;
+    replaceDocument(doc: {[field:string]: unknown}, additionalQuery?: { [field: string]: unknown; }): Promise<void>;
+    deleteDocument(_id: string, additionalQuery?: { [field: string]: unknown; }): Promise<void>;
+    getDocument(_id: string, additionalQuery?: { [field: string]: unknown; }): Promise<{[field:string]: unknown} | null>;
     findDocuments(query?: {[field:string]: unknown}, options?: FindDocumentsOptions): Promise<{[field:string]: unknown}[]>;
 }
 
 export interface FindDocumentsOptions {
-    sort: {[field:string]: number};
-    projection: {[field:string]: number};
-    limit: number,
-    skip: number
+    sort?: {[field:string]: number};
+    projection?: {[field:string]: number};
+    limit?: number,
+    skip?: number
 }
+
+export class DatabaseConfigHelper {
+    public config(databaseConfig: DatabaseConfig): DatabaseConfig {
+        return databaseConfig;
+    }
+}
+
+export interface DatabaseConfig {
+    collections?: {[collectionName:string]: DatabaseConfigCollection};
+}
+
+interface DatabaseConfigCollection {
+    permissions?: DatabaseConfigCollectionPermission[];
+    notifyOnChange?: boolean;
+}
+
+export interface DatabaseConfigCollectionPermission {
+    operations?: DatabaseOperationType[];
+    allowedRoles?: ("authenticated" | string)[];
+    restrictDocsByUser?: boolean;
+}
+
+export type DatabaseOperationType = "insertDocument" | "replaceDocument" | "deleteDocument" | "getDocument" | "findDocuments";

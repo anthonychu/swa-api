@@ -132,9 +132,9 @@ var SimpleMongoCollection = /** @class */ (function () {
             });
         });
     };
-    SimpleMongoCollection.prototype.replaceDocument = function (doc) {
+    SimpleMongoCollection.prototype.replaceDocument = function (doc, additionalQuery) {
         return __awaiter(this, void 0, void 0, function () {
-            var _id;
+            var _id, query, result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -144,7 +144,32 @@ var SimpleMongoCollection = /** @class */ (function () {
                         _id = new mongodb_1.ObjectId(doc._id);
                         this.addAuditInfo(doc);
                         delete doc._id;
-                        return [4 /*yield*/, this.mongoCollection.replaceOne({ _id: _id }, doc)];
+                        query = { _id: _id };
+                        if (additionalQuery) {
+                            Object.assign(query, additionalQuery);
+                        }
+                        return [4 /*yield*/, this.mongoCollection.replaceOne(query, doc)];
+                    case 1:
+                        result = _a.sent();
+                        if (result.modifiedCount !== 1) {
+                            throw ("Expected 1 modified but got " + result.modifiedCount);
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    SimpleMongoCollection.prototype.deleteDocument = function (_id, additionalQuery) {
+        return __awaiter(this, void 0, void 0, function () {
+            var query;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        query = { _id: new mongodb_1.ObjectId(_id) };
+                        if (additionalQuery) {
+                            Object.assign(query, additionalQuery);
+                        }
+                        return [4 /*yield*/, this.mongoCollection.deleteOne(query)];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];
@@ -152,23 +177,17 @@ var SimpleMongoCollection = /** @class */ (function () {
             });
         });
     };
-    SimpleMongoCollection.prototype.deleteDocument = function (_id) {
+    SimpleMongoCollection.prototype.getDocument = function (_id, additionalQuery) {
         return __awaiter(this, void 0, void 0, function () {
+            var query;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.mongoCollection.deleteOne({ _id: new mongodb_1.ObjectId(_id) })];
-                    case 1:
-                        _a.sent();
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    SimpleMongoCollection.prototype.getDocument = function (_id) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.mongoCollection.findOne({ _id: new mongodb_1.ObjectId(_id) })];
+                    case 0:
+                        query = { _id: new mongodb_1.ObjectId(_id) };
+                        if (additionalQuery) {
+                            Object.assign(query, additionalQuery);
+                        }
+                        return [4 /*yield*/, this.mongoCollection.findOne(query)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
