@@ -35,26 +35,77 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.swaManagementFunctionJson = exports.swaManagementFunction = void 0;
+var auth_1 = require("./auth");
+var constants_1 = __importDefault(require("./constants"));
 var signalr_1 = require("./signalr");
 function swaManagementFunction(context) {
-    var _a;
     return __awaiter(this, void 0, void 0, function () {
-        var route;
+        var route, _a;
         return __generator(this, function (_b) {
-            route = context.bindingData.route;
-            context.log("Management function triggered: " + route);
-            switch (route) {
-                case "realtime/negotiate":
-                    (_a = context.res) === null || _a === void 0 ? void 0 : _a.json(signalr_1.SignalRClient.fromConnectionString().generateNegotiatePayload());
-                    break;
+            switch (_b.label) {
+                case 0:
+                    route = context.bindingData.route;
+                    context.log("Management function triggered: " + route);
+                    _a = route;
+                    switch (_a) {
+                        case "realtime/negotiate": return [3 /*break*/, 1];
+                    }
+                    return [3 /*break*/, 3];
+                case 1: return [4 /*yield*/, signalRNegotiate(context)];
+                case 2:
+                    _b.sent();
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
             }
-            return [2 /*return*/];
         });
     });
 }
 exports.swaManagementFunction = swaManagementFunction;
+function signalRNegotiate(context) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function () {
+        var user, client, _i, _b, role;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    user = auth_1.decodeAuthInfo(context.req);
+                    client = signalr_1.SignalRClient.fromConnectionString();
+                    if (!user) return [3 /*break*/, 7];
+                    return [4 /*yield*/, client.removeUserFromAllGroups(user.userId)];
+                case 1:
+                    _c.sent();
+                    _i = 0, _b = user.userRoles;
+                    _c.label = 2;
+                case 2:
+                    if (!(_i < _b.length)) return [3 /*break*/, 5];
+                    role = _b[_i];
+                    if (!(role !== constants_1.default.anonymousUserRoleName)) return [3 /*break*/, 4];
+                    return [4 /*yield*/, client.addUserToGroup(user.userId, role)];
+                case 3:
+                    _c.sent();
+                    _c.label = 4;
+                case 4:
+                    _i++;
+                    return [3 /*break*/, 2];
+                case 5: return [4 /*yield*/, client.addUserToGroup(user.userId, getUserDetailGroupName(user.userDetails))];
+                case 6:
+                    _c.sent();
+                    _c.label = 7;
+                case 7:
+                    (_a = context.res) === null || _a === void 0 ? void 0 : _a.json(client.generateNegotiatePayload(user === null || user === void 0 ? void 0 : user.userId));
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+function getUserDetailGroupName(userDetails) {
+    return "userdetail_" + userDetails.replace(/[^A-Za-z0-9]/g, "_");
+}
 var swaManagementFunctionJson = {
     "disabled": false,
     "bindings": [

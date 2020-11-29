@@ -6,6 +6,8 @@ export declare class SignalRClient {
     constructor(endpoint: string, accessKey: string, hubName: string);
     static fromConnectionString(connectionString?: string): SignalRClient;
     send(eventName: string, eventData?: unknown, options?: SendOptions): Promise<void>;
+    addUserToGroup(userId: string, groupName: string): Promise<void>;
+    removeUserFromAllGroups(userId: string): Promise<void>;
     generateNegotiatePayload(userId?: string): NegotiatePayload;
     private generateAccessToken;
 }

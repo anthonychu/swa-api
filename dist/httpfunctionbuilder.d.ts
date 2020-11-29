@@ -1,6 +1,7 @@
-import { AuthorizationOptions, FunctionBuilder, FunctionBuilderContext } from "./functionbuilder";
+import { FunctionBuilder, FunctionBuilderContext } from "./functionbuilder";
 import { HttpContext } from "./httpcontext";
 import { ServerlessFunction } from "./serverlessfunctions";
+import { AuthorizationOptions } from "./auth";
 export declare class HttpFunctionBuilder extends FunctionBuilder<FunctionBuilderContext> {
     constructor(context?: FunctionBuilderContext);
     allow(options: AuthorizationOptions): HttpFunctionBuilder;

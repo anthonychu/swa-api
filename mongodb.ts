@@ -1,7 +1,7 @@
 import { Db, MongoClient, ObjectId, Collection as MongoCollection } from "mongodb";
 import { Collection, Database, FindDocumentsOptions } from "./database";
 import constants from "./constants";
-import { AuthenticatedUser } from "./functionbuilder";
+import { AuthenticatedUser } from "./auth";
 
 export class MongoDb {
     private static initializeTask: Promise<Db>;

@@ -1,3 +1,4 @@
+import { AuthenticatedUser, AuthorizationOptions } from "./auth";
 import { HttpRequest } from "./serverlessfunctions";
 export declare class FunctionBuilder<T extends FunctionBuilderContext> {
     private builderFactory;
@@ -11,16 +12,5 @@ export declare class FunctionBuilder<T extends FunctionBuilderContext> {
 }
 export declare class FunctionBuilderContext {
     authorizationOptions?: AuthorizationOptions;
-}
-export interface AuthorizationOptions {
-    userDetails?: string[];
-    userIds?: string[];
-    userRoles?: string[];
-}
-export interface AuthenticatedUser {
-    identityProvider: string;
-    userId: string;
-    userDetails: string;
-    userRoles: string[];
 }
 //# sourceMappingURL=functionbuilder.d.ts.map

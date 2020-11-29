@@ -1,6 +1,6 @@
 import { Realtime } from "./realtime";
 import { Logger } from "./serverlessfunctions";
-import { AuthenticatedUser } from "./functionbuilder";
+import { AuthenticatedUser } from "./auth";
 import { Context } from "@azure/functions";
 import { MongoDb } from "./mongodb";
 import { Database } from "./database";

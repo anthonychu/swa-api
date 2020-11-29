@@ -114,6 +114,62 @@ var SignalRClient = /** @class */ (function () {
             });
         });
     };
+    SignalRClient.prototype.addUserToGroup = function (userId, groupName) {
+        return __awaiter(this, void 0, void 0, function () {
+            var hubUrl, accessToken, response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        hubUrl = this.endpoint + "/api/v1/hubs/" + this.hubName + "/groups/" + encodeURIComponent(groupName) + "/users/" + encodeURIComponent(userId);
+                        accessToken = this.generateAccessToken(hubUrl);
+                        return [4 /*yield*/, node_fetch_1.default(hubUrl, {
+                                method: 'PUT',
+                                headers: {
+                                    'Authorization': "Bearer " + accessToken
+                                }
+                            })];
+                    case 1:
+                        response = _a.sent();
+                        if (response.status >= 200 && response.status < 300) {
+                            console.log("Added user " + userId + " to group " + groupName);
+                        }
+                        else {
+                            console.error("Failed to add user " + userId + " to group " + groupName);
+                            throw new Error("Failed to add user " + userId + " to group " + groupName);
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    SignalRClient.prototype.removeUserFromAllGroups = function (userId) {
+        return __awaiter(this, void 0, void 0, function () {
+            var hubUrl, accessToken, response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        hubUrl = this.endpoint + "/api/v1/hubs/" + this.hubName + "/users/" + userId + "/groups";
+                        accessToken = this.generateAccessToken(hubUrl);
+                        return [4 /*yield*/, node_fetch_1.default(hubUrl, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Authorization': "Bearer " + accessToken
+                                }
+                            })];
+                    case 1:
+                        response = _a.sent();
+                        if (response.status >= 200 && response.status < 300) {
+                            console.log("Removed user " + userId + " from all groups");
+                        }
+                        else {
+                            console.error("Failed to remove user " + userId + " from all groups");
+                            throw new Error("Failed to remove user " + userId + " from all groups");
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     SignalRClient.prototype.generateNegotiatePayload = function (userId) {
         var hubUrl = this.endpoint + "/client/?hub=" + this.hubName;
         var accessToken = this.generateAccessToken(hubUrl, userId);

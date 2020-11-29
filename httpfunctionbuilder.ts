@@ -1,7 +1,8 @@
-import { AuthorizationOptions, FunctionBuilder, FunctionBuilderContext } from "./functionbuilder";
+import { FunctionBuilder, FunctionBuilderContext } from "./functionbuilder";
 import { HttpContext } from "./httpcontext";
 import { HttpForm, HttpFormFile, HttpRequest, ServerlessFunction } from "./serverlessfunctions";
 import Busboy from "busboy";
+import { AuthorizationOptions } from "./auth";
 
 export class HttpFunctionBuilder extends FunctionBuilder<FunctionBuilderContext> {
     constructor(context?: FunctionBuilderContext) {

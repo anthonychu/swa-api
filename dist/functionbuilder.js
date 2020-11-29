@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FunctionBuilderContext = exports.FunctionBuilder = void 0;
+var auth_1 = require("./auth");
 var FunctionBuilder = /** @class */ (function () {
     function FunctionBuilder(builderFactory, contextType, context) {
         this.builderFactory = builderFactory;
@@ -22,25 +23,7 @@ var FunctionBuilder = /** @class */ (function () {
         return this.allow({ userRoles: ["authenticated"] });
     };
     FunctionBuilder.prototype.decodeAuthInfo = function (req) {
-        if (!req)
-            return;
-        // This block sets a development user that has rights to upload
-        // TODO: find a better way to do this
-        if (process.env.AZURE_FUNCTIONS_ENVIRONMENT === "Development") {
-            return {
-                identityProvider: "github",
-                userId: "17baeed9bn1sa3e5dbs24283",
-                userDetails: "testuser",
-                userRoles: ["admin", "anonymous", "authenticated"],
-            };
-        }
-        var clientPrincipalHeader = "x-ms-client-principal";
-        if (req.headers[clientPrincipalHeader] == null) {
-            return;
-        }
-        var buffer = Buffer.from(req.headers[clientPrincipalHeader], "base64");
-        var serializedJson = buffer.toString("ascii");
-        return JSON.parse(serializedJson);
+        return auth_1.decodeAuthInfo(req);
     };
     FunctionBuilder.prototype.isAuthorized = function (authenticatedUser) {
         var _this = this;

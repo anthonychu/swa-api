@@ -31,7 +31,7 @@ export class SignalRClient {
 
         const payload: SendPayload = {
             target: eventName,
-            arguments: [ eventData ]
+            arguments: [eventData]
         };
 
         if (options?.userId) {
@@ -48,6 +48,40 @@ export class SignalRClient {
             },
             body: JSON.stringify(payload)
         });
+    }
+
+    public async addUserToGroup(userId: string, groupName: string): Promise<void> {
+        const hubUrl = `${this.endpoint}/api/v1/hubs/${this.hubName}/groups/${encodeURIComponent(groupName)}/users/${encodeURIComponent(userId)}`;
+        const accessToken = this.generateAccessToken(hubUrl);
+        const response = await fetch(hubUrl, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+        if (response.status >= 200 && response.status < 300) {
+            console.log(`Added user ${userId} to group ${groupName}`);
+        } else {
+            console.error(`Failed to add user ${userId} to group ${groupName}`);
+            throw new Error(`Failed to add user ${userId} to group ${groupName}`);
+        }
+    }
+
+    public async removeUserFromAllGroups(userId: string): Promise<void> {
+        const hubUrl = `${this.endpoint}/api/v1/hubs/${this.hubName}/users/${userId}/groups`;
+        const accessToken = this.generateAccessToken(hubUrl);
+        const response = await fetch(hubUrl, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+        if (response.status >= 200 && response.status < 300) {
+            console.log(`Removed user ${userId} from all groups`);
+        } else {
+            console.error(`Failed to remove user ${userId} from all groups`);
+            throw new Error(`Failed to remove user ${userId} from all groups`);
+        }
     }
 
     generateNegotiatePayload(userId?: string): NegotiatePayload {

@@ -1,4 +1,5 @@
-import { AuthorizationOptions, FunctionBuilder, FunctionBuilderContext } from "./functionbuilder";
+import { AuthorizationOptions } from "./auth";
+import { FunctionBuilder, FunctionBuilderContext } from "./functionbuilder";
 import { RpcContext } from "./rpccontext";
 import { ServerlessFunction } from "./serverlessfunctions";
 export declare class RpcFunctionBuilder extends FunctionBuilder<FunctionBuilderContext> {

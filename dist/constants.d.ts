@@ -3,6 +3,7 @@ declare const _default: {
     mongoDatabaseNameSettingName: string;
     mongoDefaultDatabaseName: string;
     managementFunctionName: string;
+    anonymousUserRoleName: string;
 };
 export default _default;
 //# sourceMappingURL=constants.d.ts.map

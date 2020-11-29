@@ -1,5 +1,5 @@
 import { Database } from "./database";
-import { AuthenticatedUser } from "./functionbuilder";
+import { AuthenticatedUser } from "./auth";
 export declare class MongoDb {
     private static initializeTask;
     private static skipDatabase;
