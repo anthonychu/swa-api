@@ -39,8 +39,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var promises_1 = __importDefault(require("fs/promises"));
-var fs_1 = __importDefault(require("fs"));
+var fs_1 = require("fs");
+var fs_2 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
 var constants_1 = __importDefault(require("../constants"));
 function clean() {
@@ -48,7 +48,7 @@ function clean() {
         var items, _i, items_1, item, functionJsonFile, functionJson, _a, _b, hostJsonFile;
         return __generator(this, function (_c) {
             switch (_c.label) {
-                case 0: return [4 /*yield*/, promises_1.default.readdir(".")];
+                case 0: return [4 /*yield*/, fs_1.promises.readdir(".")];
                 case 1:
                     items = _c.sent();
                     _i = 0, items_1 = items;
@@ -57,14 +57,14 @@ function clean() {
                     if (!(_i < items_1.length)) return [3 /*break*/, 6];
                     item = items_1[_i];
                     functionJsonFile = path_1.default.join(item, "function.json");
-                    if (!fs_1.default.existsSync(functionJsonFile)) return [3 /*break*/, 5];
+                    if (!fs_2.default.existsSync(functionJsonFile)) return [3 /*break*/, 5];
                     _b = (_a = JSON).parse;
-                    return [4 /*yield*/, promises_1.default.readFile(functionJsonFile)];
+                    return [4 /*yield*/, fs_1.promises.readFile(functionJsonFile)];
                 case 3:
                     functionJson = _b.apply(_a, [_c.sent()]);
                     if (!(functionJson.generatedBy === "swa-api")) return [3 /*break*/, 5];
                     console.log("Deleting folder " + item);
-                    return [4 /*yield*/, promises_1.default.rmdir(item, { recursive: true })];
+                    return [4 /*yield*/, fs_1.promises.rmdir(item, { recursive: true })];
                 case 4:
                     _c.sent();
                     _c.label = 5;
@@ -72,18 +72,18 @@ function clean() {
                     _i++;
                     return [3 /*break*/, 2];
                 case 6:
-                    if (!fs_1.default.existsSync(constants_1.default.managementFunctionName)) return [3 /*break*/, 8];
-                    if (!fs_1.default.lstatSync(constants_1.default.managementFunctionName).isDirectory()) return [3 /*break*/, 8];
+                    if (!fs_2.default.existsSync(constants_1.default.managementFunctionName)) return [3 /*break*/, 8];
+                    if (!fs_2.default.lstatSync(constants_1.default.managementFunctionName).isDirectory()) return [3 /*break*/, 8];
                     console.log("Deleting folder " + constants_1.default.managementFunctionName);
-                    return [4 /*yield*/, promises_1.default.rmdir(constants_1.default.managementFunctionName, { recursive: true })];
+                    return [4 /*yield*/, fs_1.promises.rmdir(constants_1.default.managementFunctionName, { recursive: true })];
                 case 7:
                     _c.sent();
                     _c.label = 8;
                 case 8:
                     hostJsonFile = "host.json";
-                    if (!fs_1.default.existsSync(hostJsonFile)) return [3 /*break*/, 10];
+                    if (!fs_2.default.existsSync(hostJsonFile)) return [3 /*break*/, 10];
                     console.log("Deleting " + hostJsonFile);
-                    return [4 /*yield*/, promises_1.default.unlink(hostJsonFile)];
+                    return [4 /*yield*/, fs_1.promises.unlink(hostJsonFile)];
                 case 9:
                     _c.sent();
                     _c.label = 10;

@@ -39,9 +39,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var promises_1 = __importDefault(require("fs/promises"));
-var path_1 = __importDefault(require("path"));
 var fs_1 = require("fs");
+var path_1 = __importDefault(require("path"));
+var fs_2 = require("fs");
 var management_1 = require("../management");
 var constants_1 = __importDefault(require("../constants"));
 function generate() {
@@ -50,17 +50,17 @@ function generate() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (fs_1.existsSync(constants_1.default.managementFunctionName)) {
+                    if (fs_2.existsSync(constants_1.default.managementFunctionName)) {
                         throw constants_1.default.managementFunctionName + " already exists. Unable to generate Azure Functions artifacts";
                     }
-                    return [4 /*yield*/, promises_1.default.mkdir(constants_1.default.managementFunctionName)];
+                    return [4 /*yield*/, fs_1.promises.mkdir(constants_1.default.managementFunctionName)];
                 case 1:
                     _a.sent();
-                    return [4 /*yield*/, promises_1.default.writeFile(path_1.default.join(constants_1.default.managementFunctionName, "function.json"), JSON.stringify(management_1.swaManagementFunctionJson))];
+                    return [4 /*yield*/, fs_1.promises.writeFile(path_1.default.join(constants_1.default.managementFunctionName, "function.json"), JSON.stringify(management_1.swaManagementFunctionJson))];
                 case 2:
                     _a.sent();
                     console.log("+ " + path_1.default.join(constants_1.default.managementFunctionName, "function.json"));
-                    return [4 /*yield*/, promises_1.default.writeFile(path_1.default.join(constants_1.default.managementFunctionName, "index.js"), "module.exports = require(\"swa-api/dist/management\").swaManagementFunction;")];
+                    return [4 /*yield*/, fs_1.promises.writeFile(path_1.default.join(constants_1.default.managementFunctionName, "index.js"), "module.exports = require(\"swa-api/dist/management\").swaManagementFunction;")];
                 case 3:
                     _a.sent();
                     console.log("+ " + path_1.default.join(constants_1.default.managementFunctionName, "index.js"));
@@ -71,7 +71,7 @@ function generate() {
                 case 5:
                     _a.sent();
                     hostJsonFile = 'host.json';
-                    return [4 /*yield*/, promises_1.default.writeFile(hostJsonFile, JSON.stringify({
+                    return [4 /*yield*/, fs_1.promises.writeFile(hostJsonFile, JSON.stringify({
                             "version": "2.0",
                             "logging": {
                                 "applicationInsights": {
@@ -95,7 +95,7 @@ function generateFunctionFolders(folder) {
         var files, _i, _a, file, fileStats, functionName, functionFolderName, functionJson, methodMatch, method;
         return __generator(this, function (_b) {
             switch (_b.label) {
-                case 0: return [4 /*yield*/, promises_1.default.readdir(folder)];
+                case 0: return [4 /*yield*/, fs_1.promises.readdir(folder)];
                 case 1:
                     files = _b.sent();
                     _i = 0, _a = files.filter(function (f) { return f.endsWith('.js'); });
@@ -103,13 +103,13 @@ function generateFunctionFolders(folder) {
                 case 2:
                     if (!(_i < _a.length)) return [3 /*break*/, 7];
                     file = _a[_i];
-                    return [4 /*yield*/, promises_1.default.lstat(path_1.default.join(folder, file))];
+                    return [4 /*yield*/, fs_1.promises.lstat(path_1.default.join(folder, file))];
                 case 3:
                     fileStats = _b.sent();
                     if (!fileStats.isFile()) return [3 /*break*/, 6];
                     functionName = path_1.default.parse(file).name.replace(/[^A-Za-z0-9]/g, " ").trim().replace(" ", "_");
                     functionFolderName = folder + "_" + functionName;
-                    return [4 /*yield*/, promises_1.default.mkdir(functionFolderName)];
+                    return [4 /*yield*/, fs_1.promises.mkdir(functionFolderName)];
                 case 4:
                     _b.sent();
                     functionJson = {
@@ -145,7 +145,7 @@ function generateFunctionFolders(folder) {
                         functionJson.bindings[0].methods = ["post"];
                         functionJson.bindings[0].route = "rpc/" + functionName;
                     }
-                    return [4 /*yield*/, promises_1.default.writeFile(path_1.default.join(functionFolderName, 'function.json'), JSON.stringify(functionJson, null, 2))];
+                    return [4 /*yield*/, fs_1.promises.writeFile(path_1.default.join(functionFolderName, 'function.json'), JSON.stringify(functionJson, null, 2))];
                 case 5:
                     _b.sent();
                     console.log("+ " + path_1.default.join(functionFolderName, 'function.json'));

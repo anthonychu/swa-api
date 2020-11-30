@@ -1,4 +1,4 @@
-import fs from "fs/promises";
+import { promises as fs } from "fs";
 import fsSync from "fs";
 import path from "path";
 import constants from "../constants";
