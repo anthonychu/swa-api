@@ -76,6 +76,9 @@ async function processDatabaseOperation(context: Context, user?: AuthenticatedUs
         return;
     }
 
+    // todo: need to check if there's a connection string
+    const signalRClient = SignalRClient.fromConnectionString();
+
     switch (payload.operation) {
         case "getDocument":
             await getDocumentOperation(collection, payload, context, operationPermission, user);
@@ -84,7 +87,7 @@ async function processDatabaseOperation(context: Context, user?: AuthenticatedUs
             await findDocumentsOperation(collection, payload, context, operationPermission, user);
             return;
         case "insertDocument":
-            await insertDocumentOperation(collection, payload, context);
+            await insertDocumentOperation(collection, payload, context, operationPermission, user);
             return;
         case "replaceDocument":
             await replaceDocumentOperation(collection, payload, context, operationPermission, user);
@@ -117,21 +120,49 @@ async function processDatabaseOperation(context: Context, user?: AuthenticatedUs
         setResponse(context, 200, { result });
     }
 
-    async function insertDocumentOperation(collection: Collection, payload: DatabaseOperation, context: Context) {
-        const result = await collection.insertDocument(payload.doc);
-        setResponse(context, 200, { result });
+    async function insertDocumentOperation(collection: Collection, payload: DatabaseOperation, context: Context, permission: DatabaseConfigCollectionPermission, user: AuthenticatedUser) {
+        const newId = await collection.insertDocument(payload.doc);
+        setResponse(context, 200, { result: newId });
+        
+        if (permission.restrictDocsByUser) {
+            const data = Object.assign({}, payload.doc, { _id: newId })
+            const updatePayload = {
+                data,
+                operation: 'insertDocument',
+                collection: payload.collection
+            }
+            await signalRClient.send('_swa_database_update', updatePayload, { userId: user?.userId })
+        }
     }
 
     async function replaceDocumentOperation(collection: Collection, payload: DatabaseOperation, context: Context, permission: DatabaseConfigCollectionPermission, user: AuthenticatedUser) {
         const additionalQuery = permission.restrictDocsByUser ? { _userId: user.userId } : {};
         await collection.replaceDocument(payload.doc, additionalQuery);
         setResponse(context, 200);
+        
+        if (permission.restrictDocsByUser) {
+            const updatePayload = {
+                data: payload.doc,
+                operation: 'replaceDocument',
+                collection: payload.collection
+            }
+            await signalRClient.send('_swa_database_update', updatePayload, { userId: user?.userId })
+        }
     }
 
     async function deleteDocumentOperation(collection: Collection, payload: DatabaseOperation, context: Context, permission: DatabaseConfigCollectionPermission, user: AuthenticatedUser) {
         const additionalQuery = permission.restrictDocsByUser ? { _userId: user.userId } : {};
         await collection.deleteDocument(payload._id, additionalQuery);
         setResponse(context, 200);
+        
+        if (permission.restrictDocsByUser) {
+            const updatePayload = {
+                data: { _id: payload._id },
+                operation: 'deleteDocument',
+                collection: payload.collection
+            }
+            await signalRClient.send('_swa_database_update', updatePayload, { userId: user?.userId })
+        }
     }
 
     function setResponse(context: Context, status: number, body?: unknown) {

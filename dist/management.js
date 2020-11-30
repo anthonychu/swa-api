@@ -150,23 +150,34 @@ function processDatabaseOperation(context, user) {
                 });
             });
         }
-        function insertDocumentOperation(collection, payload, context) {
+        function insertDocumentOperation(collection, payload, context, permission, user) {
             return __awaiter(this, void 0, void 0, function () {
-                var result;
+                var newId, data, updatePayload;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0: return [4 /*yield*/, collection.insertDocument(payload.doc)];
                         case 1:
-                            result = _a.sent();
-                            setResponse(context, 200, { result: result });
-                            return [2 /*return*/];
+                            newId = _a.sent();
+                            setResponse(context, 200, { result: newId });
+                            if (!permission.restrictDocsByUser) return [3 /*break*/, 3];
+                            data = Object.assign({}, payload.doc, { _id: newId });
+                            updatePayload = {
+                                data: data,
+                                operation: 'insertDocument',
+                                collection: payload.collection
+                            };
+                            return [4 /*yield*/, signalRClient.send('_swa_database_update', updatePayload, { userId: user === null || user === void 0 ? void 0 : user.userId })];
+                        case 2:
+                            _a.sent();
+                            _a.label = 3;
+                        case 3: return [2 /*return*/];
                     }
                 });
             });
         }
         function replaceDocumentOperation(collection, payload, context, permission, user) {
             return __awaiter(this, void 0, void 0, function () {
-                var additionalQuery;
+                var additionalQuery, updatePayload;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -175,14 +186,24 @@ function processDatabaseOperation(context, user) {
                         case 1:
                             _a.sent();
                             setResponse(context, 200);
-                            return [2 /*return*/];
+                            if (!permission.restrictDocsByUser) return [3 /*break*/, 3];
+                            updatePayload = {
+                                data: payload.doc,
+                                operation: 'replaceDocument',
+                                collection: payload.collection
+                            };
+                            return [4 /*yield*/, signalRClient.send('_swa_database_update', updatePayload, { userId: user === null || user === void 0 ? void 0 : user.userId })];
+                        case 2:
+                            _a.sent();
+                            _a.label = 3;
+                        case 3: return [2 /*return*/];
                     }
                 });
             });
         }
         function deleteDocumentOperation(collection, payload, context, permission, user) {
             return __awaiter(this, void 0, void 0, function () {
-                var additionalQuery;
+                var additionalQuery, updatePayload;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -191,7 +212,17 @@ function processDatabaseOperation(context, user) {
                         case 1:
                             _a.sent();
                             setResponse(context, 200);
-                            return [2 /*return*/];
+                            if (!permission.restrictDocsByUser) return [3 /*break*/, 3];
+                            updatePayload = {
+                                data: { _id: payload._id },
+                                operation: 'deleteDocument',
+                                collection: payload.collection
+                            };
+                            return [4 /*yield*/, signalRClient.send('_swa_database_update', updatePayload, { userId: user === null || user === void 0 ? void 0 : user.userId })];
+                        case 2:
+                            _a.sent();
+                            _a.label = 3;
+                        case 3: return [2 /*return*/];
                     }
                 });
             });
@@ -207,7 +238,7 @@ function processDatabaseOperation(context, user) {
                 }
             }
         }
-        var payload, config, collectionConfig, operationPermission, matchingAllowedUserRoles, database, collection, _f;
+        var payload, config, collectionConfig, operationPermission, matchingAllowedUserRoles, database, collection, signalRClient, _f;
         return __generator(this, function (_g) {
             switch (_g.label) {
                 case 0:
@@ -250,6 +281,7 @@ function processDatabaseOperation(context, user) {
                         setResponse(context, 400);
                         return [2 /*return*/];
                     }
+                    signalRClient = signalr_1.SignalRClient.fromConnectionString();
                     _f = payload.operation;
                     switch (_f) {
                         case "getDocument": return [3 /*break*/, 3];
@@ -267,7 +299,7 @@ function processDatabaseOperation(context, user) {
                 case 6:
                     _g.sent();
                     return [2 /*return*/];
-                case 7: return [4 /*yield*/, insertDocumentOperation(collection, payload, context)];
+                case 7: return [4 /*yield*/, insertDocumentOperation(collection, payload, context, operationPermission, user)];
                 case 8:
                     _g.sent();
                     return [2 /*return*/];

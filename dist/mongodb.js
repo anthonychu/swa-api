@@ -134,7 +134,7 @@ var SimpleMongoCollection = /** @class */ (function () {
     };
     SimpleMongoCollection.prototype.replaceDocument = function (doc, additionalQuery) {
         return __awaiter(this, void 0, void 0, function () {
-            var _id, query, result;
+            var _id, updateDoc, query, result;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -143,12 +143,13 @@ var SimpleMongoCollection = /** @class */ (function () {
                         }
                         _id = new mongodb_1.ObjectId(doc._id);
                         this.addAuditInfo(doc);
-                        delete doc._id;
+                        updateDoc = Object.assign({}, doc);
+                        delete updateDoc._id;
                         query = { _id: _id };
                         if (additionalQuery) {
                             Object.assign(query, additionalQuery);
                         }
-                        return [4 /*yield*/, this.mongoCollection.replaceOne(query, doc)];
+                        return [4 /*yield*/, this.mongoCollection.replaceOne(query, updateDoc)];
                     case 1:
                         result = _a.sent();
                         if (result.modifiedCount !== 1) {

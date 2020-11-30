@@ -74,12 +74,13 @@ class SimpleMongoCollection implements Collection {
         }
         const _id = new ObjectId(doc._id as string);
         this.addAuditInfo(doc);
-        delete doc._id;
+        const updateDoc = Object.assign({}, doc);
+        delete updateDoc._id;
         const query = { _id };
         if (additionalQuery) {
             Object.assign(query, additionalQuery);
         }
-        const result = await this.mongoCollection.replaceOne(query, doc);
+        const result = await this.mongoCollection.replaceOne(query, updateDoc);
         if (result.modifiedCount !== 1) {
             throw("Expected 1 modified but got " + result.modifiedCount);
         }
